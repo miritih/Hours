@@ -1,8 +1,8 @@
 %thead
   %tr
-    %th= t("entries.index.date")
-    %th= t("entries.index.project")
-    %th.center= t("entries.index.hours")
+    %th=sortable t("entries.index.date")
+    %th=sortable t("entries.index.project"), 'project_id'
+    %th.center=sortable t("entries.index.hours"), 'value'
     %th.hide-for-mobile= t("entries.index.category")
     %th.hide-for-mobile= t("entries.index.description")
     - if @user == current_user
