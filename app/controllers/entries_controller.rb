@@ -1,13 +1,19 @@
 class EntriesController < ApplicationController
   include CSVDownload
+  before_action :sort_params, :direction_params, only: [:index]
+
+  helper_method :sort_params, :direction_params
 
   DATE_FORMAT = "%d/%m/%Y".freeze
 
   def index
     @user = User.find_by_slug(params[:user_id])
-    @hours_entries = @user.hours.by_date.page(params[:hours_pages]).per(20)
-    @mileages_entries = @user.mileages.by_date.page(
-      params[:mileages_pages]).per(20)
+    @hours_entries = @user.hours.
+                              page(params[:hours_pages]).
+                              per(20).
+                              order(sort_params << ' ' << direction_params)
+    @mileages_entries = @user.mileages.page(
+      params[:mileages_pages]).per(20).order(sort_params << ' ' << direction_params)
 
     respond_to do |format|
       format.html { @mileages_entries + @hours_entries }
@@ -34,6 +40,14 @@ class EntriesController < ApplicationController
 
   def set_entry_type
     params[:controller]
+  end
+
+  def sort_params
+    Hour.column_names.include?(params[:sort]) ? params[:sort] : 'date'
+  end
+
+  def direction_params
+    %w[asc desc].include?(params[:direction])? params[:direction] : 'asc'
   end
 
   def parsed_date(entry_type)

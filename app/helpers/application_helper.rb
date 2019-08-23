@@ -82,4 +82,11 @@ module ApplicationHelper
     Hour.includes(:category, :user, :project).
       where(project: project, billed: false)
   end
+
+  def sortable(title, column = nil)
+    column ||= title.downcase
+    direction = column == sort_params && direction_params  == 'asc' ? 'desc' : 'asc'
+    arrow_class = direction == 'asc' ? 'arrow-up' : 'arrow-down'
+    link_to title, { sort: column, direction: direction }, { class: arrow_class }
+  end
 end
